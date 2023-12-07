@@ -39,31 +39,46 @@ const SecondPage: React.FC = () => {
   ];
 
   return (
-    <div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"flex-start"}}>
-         <div style={{ height: 650, width: "100%",backgroundColor:"white",margin:"10px"}}>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <DataGrid
-          rows={posts}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}
+    >
+      <div
+        style={{
+          height: 650,
+          width: "100%",
+          backgroundColor: "white",
+          margin: "10px",
+          marginBottom:"40px"
+        }}
+      >
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <DataGrid
+            rows={posts}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10,
+                },
               },
-            },
-          }}
-          pageSizeOptions={[5, 10, 20, 25, 50, 100]}
-        />
-      )}
+            }}
+            pageSizeOptions={[5, 10, 20, 25, 50, 100]}
+          />
+        )}
+      </div>
+      <div style={{ margin: "10px" }}>
+        <Third />
+      </div>
     </div>
-    <div style={{margin:"10px"}}>
-        <Third/>
-    </div>
-    </div>
-   
   );
 };
 
 export default SecondPage;
+
