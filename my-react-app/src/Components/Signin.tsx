@@ -1,72 +1,118 @@
-// src/Form.tsx
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import { Link } from 'react-router-dom';
+// UserForm.tsx
 
-const Form: React.FC = () => {
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import { useNavigate } from "react-router-dom";
+interface FormErrors {
+  username: string;
+  phoneNumber: string;
+  email: string;
+}
 
+const UserForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({
+    username: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // Clear the corresponding error when the user starts typing in a field
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+  };
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (name && phoneNumber && email) {
-      // Do something with the form data (e.g., submit to server)
-      setSubmitted(true);
+
+    // Validate the form fields
+    const validationErrors: FormErrors = {
+      username: "",
+      phoneNumber: "",
+      email: "",
+    };
+    Object.keys(formData).forEach((key) => {
+      const formKey = key as keyof FormErrors; // assert the key type
+      if (!formData[formKey]) {
+        validationErrors[formKey] = `${
+          formKey.charAt(0).toUpperCase() + formKey.slice(1)
+        } is required`;
+      }
+      else{
+        navigate('/second-page', { replace: true });
+      }
+    });
+
+    if (Object.values(validationErrors).some((error) => error !== "")) {
+      // Display validation errors
+      setErrors(validationErrors);
     } else {
-      // Display an error message or handle validation
-      alert('Please enter all details before submitting.');
+      // No validation errors, proceed to store data in local storage
+      localStorage.setItem("userData", JSON.stringify(formData));
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box>
+    <Box>
+      <form onSubmit={handleSubmit} style={{ backgroundColor:"#fff", padding: '20px' }}>
         <TextField
-          label="Name"
-          variant="outlined"
+          label="Username"
+          name="username"
+          
+          value={formData.username}
+          onChange={handleChange}
           margin="normal"
+          style={{ marginBottom: '20px' ,}}
           fullWidth
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          required
+          error={!!errors.username}
+          helperText={errors.username}
         />
-      </Box>
-      <Box>
         <TextField
           label="Phone Number"
-          variant="outlined"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
           margin="normal"
+          style={{ marginBottom: '20px' }}
           fullWidth
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          required
+          error={!!errors.phoneNumber}
+          helperText={errors.phoneNumber}
         />
-      </Box>
-      <Box>
         <TextField
           label="Email"
-          variant="outlined"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
           margin="normal"
+          style={{ marginBottom: '20px' }}
           fullWidth
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          required
+          error={!!errors.email}
+          helperText={errors.email}
         />
-      </Box>
-      <Box mt={2}>
-        <Button variant="contained" color="primary" type="submit">
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          style={{ width: "30%", margin: "auto 35%" , backgroundColor: '#113946'  }}
+        >
           Submit
         </Button>
-      </Box>
-      {submitted && (
-        <div>
-          <p>Form submitted successfully!</p>
-          <Link to="/second-page">Go to Second Page</Link>
-        </div>
-      )}
-    </form>
+      </form>
+    </Box>
   );
 };
 
-export default Form;
+export default UserForm;
